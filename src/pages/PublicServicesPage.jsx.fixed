@@ -1,0 +1,211 @@
+﻿import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
+  Chip,
+  Container,
+  Skeleton,
+  Alert,
+} from '@mui/material';
+import { Spa, Favorite, AccessTime, ArrowForward, LocalOffer } from '@mui/icons-material';
+import { servicesApi } from '../services/services';
+
+const PublicServicesPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [services, setServices] = useState([]);
+  const [error, setError] = useState(null);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const res = await servicesApi.list({ activeOnly: true, limit: 50 });
+      setServices(res.data.data.services);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al cargar servicios');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 0,
+    }).format(price / 100);
+  };
+
+  const formatDuration = (minutes) => {
+    if (minutes < 60) return `${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+  };
+
+  if (error) {
+    return (
+      <Container maxWidth="xl" sx={{ py: 6 }}>
+        <Alert severity="error" sx={{ textAlign: 'center', maxWidth: 500, mx: 'auto' }}>
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  return (
+    <Box sx={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      {/* Hero */}
+      <Box
+        sx={{
+          py: { xs: 6, md: 10 },
+          px: { xs: 2, md: 4 },
+          background: 'linear-gradient(135deg, #0B2545 0%, #087FBD 100%)',
+          color: '#ffffff',
+          textAlign: 'center',
+        }}
+      >
+        <Container maxWidth="md">
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              borderRadius: 16,
+              background: 'rgba(255,255,255,0.2)',
+              mb: 3,
+            }}
+          >
+            <Spa sx={{ fontSize: 32, color: '#ffffff' }} />
+          </Box>
+          <Typography variant="h2" component="h1" gutterBottom fontWeight={700}>
+            Nuestros Servicios
+          </Typography>
+          <Typography variant="h6" color="text.secondary" paragraph sx={{ color: 'rgba(255,255,255,0.9)', maxWidth: 600 }}>
+            Descubre nuestra carta de servicios diseÃ±ada para realzar tu belleza. Todos realizados con productos premium y por profesionales certificados.
+          </Typography>
+        </Container>
+      </Box>
+
+      {/* Services Grid */}
+      <Container maxWidth="xl" sx={{ py: { xs: 4, md: 8 }, mt: -4, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ mb: 6, textAlign: 'center' }}>
+          <Typography variant="h4" component="h2" gutterBottom fontWeight={700} sx={{ color: '#0B2545' }}>
+            CatÃ¡logo de Servicios
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ color: '#64748b', maxWidth: 600, mx: 'auto' }}>
+            {loading ? 'Cargando...' : `${services.length} servicios disponibles`}
+          </Typography>
+        </Box>
+
+        {loading ? (
+          <Grid container spacing={3}>
+            {[...Array(6)].map((_, i) => (
+              <Grid item xs={12} sm={6} lg={4} key={i}>
+                <Card sx={{ height: '100%', border: '1px solid', borderColor: 'rgba(148, 163, 184, 0.2)' }}>
+                  <CardMedia
+                    component="div"
+                    sx={{ height: 200, backgroundColor: '#e2e8f0' }}
+                  >
+                    <Skeleton variant="rectangular" width="100%" height="100%" />
+                  </CardMedia>
+                  <CardContent>
+                    <Skeleton variant="text" width="60%" height={24} />
+                    <Skeleton variant="text" width="40%" height={16} sx={{ mt: 1 }} />
+                    <Skeleton variant="text" width="80%" height={16} sx={{ mt: 2 }} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : services.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h5" color="text.secondary" gutterBottom>
+              No hay servicios disponibles
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ color: '#64748b' }}>
+              Vuelve pronto para ver nuestros nuevos servicios.
+            </Typography>
+          </Box>
+        ) : (
+          <Grid container spacing={3}>
+            {services.map((service) => (
+              <Grid item xs={12} sm={6} lg={4} key={service.id}>
+                <Card sx={{ height: '100%', border: '1px solid', borderColor: 'rgba(148, 163, 184, 0.2)' }}>
+                  <CardMedia
+                    component="div"
+                    sx={{ height: 200, backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <Spa sx={{ fontSize: 48, color: '#94a3b8' }} />
+                  </CardMedia>
+                  <CardContent sx={{ py: 2, px: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ color: '#0B2545' }}>
+                        {service.name}
+                      </Typography>
+                      <Chip
+                        label={formatPrice(service.price)}
+                        icon={<LocalOffer fontSize="small" />}
+                        color="primary"
+                        size="small"
+                        variant="outlined"
+                      />
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ color: '#64748b', mb: 1 }}>
+                      {service.description || 'Servicio profesional personalizado segÃºn tus necesidades.'}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1, flexWrap: 'wrap' }}>
+                      <Chip
+                        icon={<AccessTime fontSize="small" />}
+                        label={formatDuration(service.durationMinutes)}
+                        size="small"
+                        variant="outlined"
+                        color="default"
+                      />
+                      {service.requiresDeposit && (
+                        <Chip
+                          icon={<Favorite fontSize="small" />}
+                          label="Requiere seÃ±a"
+                          size="small"
+                          variant="outlined"
+                          color="warning"
+                        />
+                      )}
+                    </Box>
+                  </CardContent>
+                </Card>
+            ))}
+          </Grid>
+        )}
+
+        {/* CTA */}
+        <Box sx={{ mt: 8, textAlign: 'center' }}>
+          <Typography variant="h6" color="text.secondary" paragraph sx={{ color: '#64748b', mb: 2 }}>
+            Â¿No encontraste lo que buscabas?
+          </Typography>
+          <Button
+            variant="outlined"
+            size="large"
+            href="/reservar"
+            startIcon={<CalendarMonth />}
+            sx={{ borderColor: '#087FBD', color: '#087FBD', '&:hover': { borderColor: '#087FBD', backgroundColor: 'rgba(8, 127, 189, 0.08)' } }}
+          >
+            Consultar disponibilidad
+          </Button>
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
+export default PublicServicesPage;

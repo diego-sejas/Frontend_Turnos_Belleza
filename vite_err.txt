@@ -1,0 +1,7 @@
+[2m4:10:29 p.m.[22m [31m[1m[vite][22m[39m [31merror while updating dependencies:
+Error: ENOENT: no such file or directory, open 'V:\Sistema_Belleza\Frontend_Belleza\node_modules\.vite\deps_temp_f9e38a01\_metadata.json'
+    at Object.writeFileSync (node:fs:2430:20)
+    at Object.commit (file:///V:/Sistema_Belleza/Frontend_Belleza/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:50757:19)
+    at commitProcessing (file:///V:/Sistema_Belleza/Frontend_Belleza/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:50259:32)
+    at runOptimizer (file:///V:/Sistema_Belleza/Frontend_Belleza/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:50295:15)
+    at onCrawlEnd (file:///V:/Sistema_Belleza/Frontend_Belleza/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:50499:9)[39m
